@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flag Football Futures | POW Athletics</title>
+    <meta name="description" content="POW Athletics Flag Football Futures - College Recruiting Platform">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏈</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Inter, system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #ffffff;
+        }
+        #loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+        .title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        .subtitle {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 2rem;
+        }
+        .spinner-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid rgba(255,255,255,0.15);
+            border-top-color: #059669;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .status {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+        }
+        .error {
+            background: rgba(239,68,68,0.15);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            max-width: 400px;
+        }
+        .error h3 { color: #fca5a5; margin-bottom: 0.5rem; }
+        .error p { color: rgba(255,255,255,0.7); font-size: 0.875rem; line-height: 1.5; }
+        .retry-btn {
+            margin-top: 1rem;
+            padding: 0.5rem 1.5rem;
+            background: #059669;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .retry-btn:hover { background: #047857; }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="logo">🏈</div>
+        <div class="title">Flag Football Futures</div>
+        <div class="subtitle">POW Athletics Recruiting Platform</div>
+        <div class="spinner-wrap"><div class="spinner"></div></div>
+        <div class="status" id="status">Connecting to database...</div>
+    </div>
+    <script>
+        (function() {
+            var statusEl = document.getElementById('status');
+            var loadingEl = document.getElementById('loading');
+
+            function showError(msg) {
+                loadingEl.innerHTML = '<div class="logo">🏈</div>' +
+                    '<div class="title">Flag Football Futures</div>' +
+                    '<div class="error"><h3>Connection Error</h3>' +
+                    '<p>' + msg + '</p>' +
+                    '<button class="retry-btn" onclick="location.reload()">Try Again</button></div>';
+            }
+
+            statusEl.textContent = 'Fetching application data...';
+
+            fetch('https://xcgeqcnimyvxdwptyffo.supabase.co/rest/v1/temp_file_transfer?select=content&order=chunk_order.asc', {
+                headers: {
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjZ2VxY25pbXl2eGR3cHR5ZmZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NDI3NzYsImV4cCI6MjA5MDMxODc3Nn0.3Xoyq72vau8AePeHCyMFMbLJQoLL_jNAuyxY5iJWu4c',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjZ2VxY25pbXl2eGR3cHR5ZmZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NDI3NzYsImV4cCI6MjA5MDMxODc3Nn0.3Xoyq72vau8AePeHCyMFMbLJQoLL_jNAuyxY5iJWu4c'
+                }
+            })
+            .then(function(r) {
+                if (!r.ok) throw new Error('Server returned ' + r.status);
+                return r.json();
+            })
+            .then(function(chunks) {
+                statusEl.textContent = 'Assembling application (' + chunks.length + ' modules)...';
+                var b64 = chunks.map(function(c) { return c.content; }).join('');
+                var binary = atob(b64);
+                var bytes = new Uint8Array(binary.length);
+                for (var i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                var html = new TextDecoder().decode(bytes);
+                statusEl.textContent = 'Launching application...';
+                setTimeout(function() {
+                    document.open();
+                    document.write(html);
+                    document.close();
+                }, 300);
+            })
+            .catch(function(err) {
+                showError('Unable to load the application. Please check your internet connection and try again. (' + err.message + ')');
+            });
+        })();
+    </script>
+</body>
+</html>
